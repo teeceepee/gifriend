@@ -1,0 +1,8 @@
+[package]
+name = "gifriend"
+version = "0.0.1"
+authors = ["Yu Haidong"]
+edition = "2018"
+
+[dependencies]
+byteorder = "1.3.1"
