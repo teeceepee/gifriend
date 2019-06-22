@@ -7,7 +7,7 @@ use crate::image_descriptor::ImageDescriptor;
 pub struct TableBasedImage {
     image_descriptor: ImageDescriptor,
     local_color_table: ColorTable,
-    image_data: ImageData,
+    pub image_data: ImageData,
 }
 
 impl TableBasedImage {

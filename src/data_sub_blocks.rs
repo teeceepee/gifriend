@@ -2,7 +2,7 @@ use crate::data_sub_block::DataSubBlock;
 
 #[derive(Debug)]
 pub struct DataSubBlocks {
-    sub_blocks: Vec<DataSubBlock>,
+    pub sub_blocks: Vec<DataSubBlock>,
 }
 
 impl DataSubBlocks {
@@ -25,5 +25,17 @@ impl DataSubBlocks {
         };
 
         Ok(blocks)
+    }
+
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut result = Vec::new();
+
+        for blk in self.sub_blocks.iter() {
+            for b in blk.data_values.iter() {
+                result.push(*b);
+            }
+        }
+
+        result
     }
 }

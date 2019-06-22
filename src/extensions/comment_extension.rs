@@ -16,4 +16,11 @@ impl CommentExtension {
 
         Ok(ext)
     }
+
+    pub fn to_s(&self) -> String {
+        match String::from_utf8(self.comment_data_and_block_terminator.to_bytes()) {
+            Ok(s) => s,
+            Err(_) => String::from(""),
+        }
+    }
 }

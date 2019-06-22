@@ -18,4 +18,3 @@ mod graphic_block;
 mod graphic_rendering_block;
 
 pub mod data_item;
-mod data_items;

@@ -32,4 +32,17 @@ impl ApplicationExtension {
 
         Ok(ext)
     }
+
+    pub fn to_s(&self) -> String {
+        let id_str = match std::str::from_utf8(&self.application_identifier) {
+            Ok(s) => s,
+            Err(_) => "",
+        };
+        let au_str = match std::str::from_utf8(&self.application_authentication_code) {
+            Ok(s) => s,
+            Err(_) => "",
+        };
+
+        format!("{} {}", id_str, au_str)
+    }
 }

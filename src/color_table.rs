@@ -3,7 +3,7 @@ use crate::color::Color;
 
 #[derive(Debug)]
 pub struct ColorTable {
-    colors: Vec<Color>,
+    pub colors: Vec<Color>,
 }
 
 impl ColorTable {

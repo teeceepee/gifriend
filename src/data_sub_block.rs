@@ -3,7 +3,7 @@ use byteorder::ReadBytesExt;
 #[derive(Debug)]
 pub struct DataSubBlock {
     pub block_size: u8,
-    data_values: Vec<u8>,
+    pub data_values: Vec<u8>,
 }
 
 impl DataSubBlock {
