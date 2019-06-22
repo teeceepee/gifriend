@@ -7,7 +7,8 @@ use crate::image_descriptor::ImageDescriptor;
 pub struct TableBasedImage {
     image_descriptor: ImageDescriptor,
     local_color_table: ColorTable,
-    pub image_data: ImageData,
+    pub decompressed: Vec<u8>,
+    //image_data: ImageData,
 }
 
 impl TableBasedImage {
@@ -22,12 +23,14 @@ impl TableBasedImage {
 
         let local_color_table = ColorTable::parse_from_reader(rdr, color_count)?;
 
-        let image_data = ImageData::parse_from_reader(rdr)?;
+        let image_data: ImageData = ImageData::parse_from_reader(rdr)?;
+        let decompressed = image_data.decompress();
 
         let image = Self {
             image_descriptor,
             local_color_table,
-            image_data,
+            decompressed,
+            //image_data,
         };
 
         Ok(image)

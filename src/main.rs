@@ -33,8 +33,10 @@ fn read() -> std::io::Result<()> {
 
 
     let img = g.images()[0];
-    println!("image data: {:?}", img.image_data);
 
+    let d = &img.decompressed;
+    println!("{:?}", d);
+    println!("size: {}", d.len());
 
     Ok(())
 }
