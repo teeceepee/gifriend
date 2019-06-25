@@ -43,8 +43,4 @@ impl LogicalScreenDescriptor {
         let size_of_global_color_table = self.packed_fields & 0b0000_0111;
         2u32.pow(size_of_global_color_table as u32 + 1)
     }
-
-    pub fn table_size(&self) -> u32 {
-        3 * self.color_count() as u32
-    }
 }

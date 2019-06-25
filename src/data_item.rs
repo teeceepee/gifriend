@@ -32,11 +32,4 @@ impl DataItem {
 
         result
     }
-
-    pub fn is_trailer(&self) -> bool {
-        match self {
-            DataItem::Trailer => true,
-            _ => false
-        }
-    }
 }

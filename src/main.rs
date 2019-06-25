@@ -7,36 +7,23 @@ fn read() -> std::io::Result<()> {
 //    let path = "samples/sample.gif";
 //    let path = "samples/test.gif";
     let path = "samples/kobe.gif";
+//    let path = "samples/s.gif";
 
     let mut file = std::fs::File::open(path)?;
 
     let mut bytes = Vec::new();
     file.read_to_end(&mut bytes)?;
 
+    if let Ok(f) = gifriend::parse(&bytes) {
+        let frames = &f.frames;
 
-    let g: gifriend::gif::Gif = gifriend::gif::Gif::parse(&bytes)?;
+        println!("gif: {} {}, frame_count: {}", f.width(), f.height(), frames.len());
 
+        let f = &frames[0];
 
-//    for i in g.data_items.iter() {
-//
-//        match i {
-//            DataItem::Image(_) => println!("Image"),
-//            _ => println!("{:?}", i),
-//        }
-//    }
+        println!("{:?}", f.bytes);
+    }
 
-    println!("w: {}, h: {}", g.width(), g.height());
-    println!("data_items size: {:#?}", g.data_items.len());
-
-    println!("applications: {:?}", g.applications());
-    println!("comments: {:?}", g.comments());
-
-
-    let img = g.images()[0];
-
-    let d = &img.decompressed;
-    println!("{:?}", d);
-    println!("size: {}", d.len());
 
     Ok(())
 }

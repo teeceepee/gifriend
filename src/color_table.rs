@@ -23,3 +23,9 @@ impl ColorTable {
         Ok(ct)
     }
 }
+
+impl Default for ColorTable {
+    fn default() -> Self {
+        Self { colors: Vec::new() }
+    }
+}

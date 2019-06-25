@@ -3,20 +3,22 @@ use crate::logical_screen_descriptor::LogicalScreenDescriptor;
 use crate::color_table::ColorTable;
 use crate::data_item::DataItem;
 use crate::extension::Extension;
-use crate::extensions::application_extension::ApplicationExtension;
-use crate::table_based_image::TableBasedImage;
+use crate::frame::Frame;
+use crate::extensions::graphic_control_extension::GraphicControlExtension;
 
 // https://www.w3.org/Graphics/GIF/spec-gif89a.txt
 
 pub struct Gif {
-    pub header: Header,
-    pub logical_screen_descriptor: LogicalScreenDescriptor,
-    pub global_color_table: Option<ColorTable>,
+    _header: Header,
+    logical_screen_descriptor: LogicalScreenDescriptor,
+    _global_color_table: ColorTable,
 
-    pub data_items: Vec<DataItem>,
+    data_items: Vec<DataItem>,
 
     application_indices: Vec<usize>,
     comment_indices: Vec<usize>,
+
+    pub frames: Vec<Frame>,
 }
 
 impl Gif {
@@ -24,14 +26,14 @@ impl Gif {
         let mut reader = std::io::Cursor::new(bytes);
 
         let header = Header::parse_from_reader(&mut reader)?;
-        let logical_screen_descriptor = LogicalScreenDescriptor::parse_from_reader(&mut reader)?;
+        let logical_screen_descriptor: LogicalScreenDescriptor = LogicalScreenDescriptor::parse_from_reader(&mut reader)?;
 
-        let global_color_table = if logical_screen_descriptor.global_color_table_flag() == 1 {
+        let global_color_table: ColorTable = if logical_screen_descriptor.global_color_table_flag() == 1 {
             let color_table = ColorTable::parse_from_reader(&mut reader, logical_screen_descriptor.color_count())?;
 
-            Some(color_table)
+            color_table
         } else {
-            None
+            ColorTable::default()
         };
 
         let mut data_items: Vec<DataItem>= Vec::new();
@@ -39,9 +41,12 @@ impl Gif {
         let mut application_indices = Vec::new();
         let mut comment_indices = Vec::new();
 
+        let mut last_ctrl: Option<GraphicControlExtension> = None;
+        let mut frames: Vec<Frame> = Vec::new();
+
         let mut i = 0;
         loop {
-            let item = DataItem::parse_from_reader(&mut reader)?;
+            let item: DataItem = DataItem::parse_from_reader(&mut reader)?;
             let mut is_trailer = false;
 
             match &item {
@@ -53,16 +58,25 @@ impl Gif {
                         Extension::Comment(_comment_ext) => {
                             comment_indices.push(i);
                         },
-                        Extension::Control(_) => {
-                            // graphic control
+                        Extension::Control(ctrl) => {
+                            last_ctrl = Some(*ctrl);
                         },
                         Extension::Text(_) => {
                             // rendering
                         }
                     }
                 },
-                DataItem::Image(_img) => {
+                DataItem::Image(img) => {
                     // rendering
+                    let frame = Frame::new(
+                        logical_screen_descriptor.logical_screen_width,
+                        logical_screen_descriptor.logical_screen_height,
+                        &global_color_table,
+                        last_ctrl,
+                        &img
+                    );
+
+                    frames.push(frame);
                 },
                 DataItem::Trailer => {
                     is_trailer = true;
@@ -80,12 +94,14 @@ impl Gif {
 
 
         let gif = Self {
-            header,
+            _header: header,
             logical_screen_descriptor,
-            global_color_table,
+            _global_color_table: global_color_table,
             data_items,
             application_indices,
             comment_indices,
+
+            frames,
         };
 
         Ok(gif)
@@ -97,21 +113,6 @@ impl Gif {
 
     pub fn height(&self) -> u16 {
         self.logical_screen_descriptor.logical_screen_height
-    }
-
-    pub fn images(&self) -> Vec<&TableBasedImage> {
-        let mut result = Vec::new();
-
-        for item in self.data_items.iter() {
-            match item {
-                DataItem::Image(img) => {
-                    result.push(img);
-                },
-                _ => {}
-            }
-        }
-
-        result
     }
 
     pub fn applications(&self) -> Vec<String> {

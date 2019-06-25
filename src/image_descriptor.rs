@@ -2,10 +2,10 @@ use byteorder::{ReadBytesExt, LE};
 
 #[derive(Debug)]
 pub struct ImageDescriptor {
-    left_position: u16,
-    top_position: u16,
-    width: u16,
-    height: u16,
+    pub left_position: u16,
+    pub top_position: u16,
+    pub width: u16,
+    pub height: u16,
 
     // packed fields:
     // bit1 :local_color_table_flag
