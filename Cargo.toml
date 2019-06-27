@@ -1,7 +1,7 @@
 [package]
 name = "gifriend"
-version = "0.1.0"
-authors = ["Yu Haidong <yuhaidongyhd@gmail.com>"]
+version = "0.1.1"
+authors = ["Yu Haidong <yuhaidongyhd+crates@gmail.com>"]
 edition = "2018"
 
 description = "An easy-to-use GIF parser"
@@ -12,5 +12,5 @@ keywords = ["gif", "parser"]
 categories = ["parsing", "parser-implementations"]
 
 [dependencies]
-byteorder = "1.3.1"
+byteorder = "1.3.2"
 lzw = "0.10.0"
