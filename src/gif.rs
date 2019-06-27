@@ -68,12 +68,14 @@ impl Gif {
                 },
                 DataItem::Image(img) => {
                     // rendering
+                    let prev_frame = frames.last();
                     let frame = Frame::new(
                         logical_screen_descriptor.logical_screen_width,
                         logical_screen_descriptor.logical_screen_height,
                         &global_color_table,
                         last_ctrl,
-                        &img
+                        &img,
+                        prev_frame,
                     );
 
                     frames.push(frame);

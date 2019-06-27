@@ -20,6 +20,7 @@ mod graphic_rendering_block;
 mod data_item;
 
 mod frame;
+mod frame_utils;
 mod utils;
 
 // https://www.w3.org/Graphics/GIF/spec-gif89a.txt
