@@ -4,22 +4,40 @@ use crate::extensions::graphic_control_extension::GraphicControlExtension;
 use crate::frame_utils::{select_colors, cal_screen_offset};
 use crate::table_based_image::TableBasedImage;
 
+///// Disposal Method
+///// Indicates the way in which the graphic is to be treated after being displayed.
 //#[repr(u8)]
 //pub enum DisposalMethod {
-//    /// StreamingDecoder is not required to take any action.
-//    Any = 0,
-//    /// Do not dispose.
-//    Keep = 1,
-//    /// Restore to background color.
+//    /// No disposal specified. The is not required to take any action.
+//    NoSpecified = 0,
+//    /// Do not dispose. The graphic is to be left in place.
+//    NotDispose = 1,
+//    /// Restore to background color. The area used by the graphic must be restored to the
+//    /// background color.
 //    Background = 2,
-//    /// Restore to previous.
+//    /// Restore to previous. The decoder is required to restore the area overwritten by the graphic
+//    /// with what was there prior to rendering the graphic.
 //    Previous = 3,
+//    // 4~7 To be defined.
+//}
+//
+//impl From<u8> for DisposalMethod {
+//    fn from(m: u8) -> DisposalMethod {
+//        match m {
+//            0 => DisposalMethod::NoSpecified,
+//            1 => DisposalMethod::NotDispose,
+//            2 => DisposalMethod::Background,
+//            3 => DisposalMethod::Previous,
+//
+//            _ => DisposalMethod::NoSpecified,
+//        }
+//    }
 //}
 
 /// 解析后的每一帧，`delay_time` 的单位是 10ms，`bytes` 保存的是 RGBA 格式（每像素四字节）的图像数据
 pub struct Frame {
     pub delay_time: u16,
-    //pub dispose_method: u8,
+    pub disposal_method: u8,
     //pub interlaced: bool,
     pub bytes: Vec<u8>,
 }
@@ -37,17 +55,21 @@ impl Frame {
         // graphic control extension 是可选的，
         // 如果存在，从中取出延迟时间和透明色下标；
         // 如果不存在，分别取 0 和 None
-        let (delay_time, transparent_index) = if let Some(control) = ctrl {
+        let result = if let Some(control) = ctrl {
             let tc_index = if control.transparent_color_flag() == 1 {
                 Some(control.transparent_color_index)
             } else {
                 None
             };
 
-            (control.delay_time, tc_index)
+            let method = control.disposal_method();
+
+            (control.delay_time, tc_index, method)
         } else {
-            (0, None)
+            (0, None, 0)
         };
+
+        let (delay_time, transparent_index, disposal_method) = result;
 
         // 选取颜色
         let colors = select_colors(global_color_table, img);
@@ -63,6 +85,7 @@ impl Frame {
 
         Self {
             delay_time,
+            disposal_method,
             bytes,
         }
     }
@@ -138,6 +161,7 @@ impl Default for Frame {
     fn default() -> Frame {
         Frame {
             delay_time: 0,
+            disposal_method: 0,
             bytes: Vec::new(),
         }
     }

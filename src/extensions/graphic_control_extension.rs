@@ -36,7 +36,68 @@ impl GraphicControlExtension {
         Ok(ext)
     }
 
+    pub fn disposal_method(&self) -> u8 {
+        (self.packed_fields & 0b0001_1100) >> 2
+    }
+
     pub fn transparent_color_flag(&self) -> u8 {
         self.packed_fields & 0b0000_0001
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_disposal_method() {
+        let ext1 = GraphicControlExtension {
+            block_size: 4,
+            packed_fields: 0,
+            delay_time: 1,
+            transparent_color_index: 0,
+            block_terminator: 0,
+        };
+        assert_eq!(0, ext1.disposal_method());
+
+        let ext2 = GraphicControlExtension {
+            block_size: 4,
+            packed_fields: 5, // 0b000_001_10
+            delay_time: 1,
+            transparent_color_index: 0,
+            block_terminator: 0,
+        };
+        assert_eq!(1, ext2.disposal_method());
+
+        let ext3 = GraphicControlExtension {
+            block_size: 4,
+            packed_fields: 128, // 0b100_000_00
+            delay_time: 1,
+            transparent_color_index: 0,
+            block_terminator: 0,
+        };
+
+        assert_eq!(0, ext3.disposal_method());
+    }
+
+    #[test]
+    fn test_transparent_color_flag() {
+        let ext1 = GraphicControlExtension {
+            block_size: 4,
+            packed_fields: 1,
+            delay_time: 1,
+            transparent_color_index: 0,
+            block_terminator: 0,
+        };
+        assert_eq!(1, ext1.transparent_color_flag());
+
+        let ext2 = GraphicControlExtension {
+            block_size: 4,
+            packed_fields: 4,
+            delay_time: 1,
+            transparent_color_index: 0,
+            block_terminator: 0,
+        };
+        assert_eq!(0, ext2.transparent_color_flag());
     }
 }
