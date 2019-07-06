@@ -14,9 +14,6 @@ mod image_data;
 mod image_descriptor;
 mod table_based_image;
 
-mod graphic_block;
-mod graphic_rendering_block;
-
 mod data_item;
 
 mod frame;

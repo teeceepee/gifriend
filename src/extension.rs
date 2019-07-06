@@ -4,7 +4,6 @@ use crate::extensions::application_extension::ApplicationExtension;
 use crate::extensions::comment_extension::CommentExtension;
 use crate::extensions::graphic_control_extension::GraphicControlExtension;
 use crate::extensions::plain_text_extension::PlainTextExtension;
-//use crate::graphic_block::GraphicBlock;
 
 #[derive(Debug)]
 pub enum Extension {
@@ -12,7 +11,6 @@ pub enum Extension {
     Comment(CommentExtension), // label: 254 (0xFE)
     Control(GraphicControlExtension), // label: 249 (0xF9)
     Text(PlainTextExtension), // label: 1 (0x01)
-//    Graphic(GraphicBlock), // label: 249 (0xF9)
 }
 
 impl Extension {
@@ -25,7 +23,6 @@ impl Extension {
             }
             249 => {
                 Extension::Control(GraphicControlExtension::parse_from_reader(rdr)?)
-//                Extension::Graphic(GraphicBlock::parse_from_reader(rdr)?)
             },
             254 => {
                 Extension::Comment(CommentExtension::parse_from_reader(rdr)?)
